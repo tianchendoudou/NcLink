@@ -19,6 +19,8 @@ import gc
 from pandas.core.frame import DataFrame
 from imblearn.over_sampling import SMOTE,ADASYN,BorderlineSMOTE
 from sklearn.ensemble import GradientBoostingClassifier
+from GCForest import *
+
 if __name__ == '__main__':
     starttime = datetime.datetime.now()
     # data = pd.read_csv("german_credit(test).csv")
@@ -34,6 +36,16 @@ if __name__ == '__main__':
     # # XX = np.array(data.iloc[:, :-1])
     # X = np.array(data.loc[:,['account_check_status', 'credit_amount', 'duration_in_month', 'age', 'purpose','credit_history', 'property', 'present_emp_since', 'installment_as_income_perc','credits_this_bank']])
     # Y = data.iloc[:, -1].map(lambda x: 1 if x == 0 else -1)
+
+    data = pd.read_csv("new_finall.csv")
+    featurelist = ['f1', 'f2', 'f3', 'f4', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12', 'f13', 'f14',
+                   'f15', 'f16', 'f17', 'f18', 'f19', 'f161', 'f162', 'f163', 'f164', 'f165', 'f166', 'f167', 'f168', 'f169',
+                   'f170', 'f171', 'f172', 'f173', 'f174', 'f175', 'f176', 'f177', 'f178', 'f179', 'f180', 'f181', 'f182', 'f183',
+                   'f184', 'f185', 'f186', 'f187', 'f188', 'f189', 'f190', 'f191', 'f192']
+    X = np.array(data.loc[:,featurelist])
+    Y = data.iloc[:, -1].map(lambda x: 1 if x == 0 else -1)
+    # new_data = data.drop('state',axis=1)
+    # X = np.array(new_data)
 
     # data = pd.read_csv("2018Q2.csv")
     # featurelist = data.columns.values.tolist()
@@ -125,13 +137,13 @@ if __name__ == '__main__':
     # Y = data.iloc[:, -1].map(lambda x: -1 if x == 0 else 1)
 
     # pageblock数据
-    data = pd.read_csv('C:\\Users\hasee\Desktop\毕业论文\data\pageblock\pageblock.csv', header=None)
-    data[10] = data[10].replace([1, 2, 3, 4, 5], ['0', '0', '1', '1', '1'])
-    data = data[data[10].isin(['0', '1'])]
-    data[10] = data[10].astype('int')
-    featurelist = data.columns.values.tolist()[:-1]
-    X = np.array(data.loc[:, featurelist])
-    Y = data.iloc[:, -1].map(lambda x: -1 if x == 0 else 1)
+    # data = pd.read_csv('C:\\Users\hasee\Desktop\毕业论文\data\pageblock\pageblock.csv', header=None)
+    # data[10] = data[10].replace([1, 2, 3, 4, 5], ['0', '0', '1', '1', '1'])
+    # data = data[data[10].isin(['0', '1'])]
+    # data[10] = data[10].astype('int')
+    # featurelist = data.columns.values.tolist()[:-1]
+    # X = np.array(data.loc[:, featurelist])
+    # Y = data.iloc[:, -1].map(lambda x: -1 if x == 0 else 1)
 
 
 
@@ -147,7 +159,7 @@ if __name__ == '__main__':
 
     inX = list(X)
     inY = list(Y)
-    X_g, Y_g = methods.MWMOTE(inX, inY, 5000)
+    X_g, Y_g = methods.MWMOTE(inX, inY, 2700)
     z = np.array(X_g)
     w = pd.Series(Y_g)
 
@@ -218,11 +230,12 @@ for i in range(25):
     RF = RandomForestClassifier(n_estimators = 5,max_features=5)
     MRF = RandomForestClassifier(n_estimators = 5)
     NB = GaussianNB()
-    SVM = SVC(kernel= 'rbf',probability=True)
+    #SVM = gcForest(shape_1X = [1,12],window=[2])#SVC(kernel= 'rbf',probability=True)
     MSVM = SVC(kernel= 'rbf',probability=True)#KNeighborsClassifier(n_neighbors=5)
     KNN = SVC(probability=True)
     GBDT = GradientBoostingClassifier(n_estimators=5)
     MGBDT = GradientBoostingClassifier(n_estimators=5)
+
 
     #单纯的随机森林
     RF.fit(X_train, y_train)
@@ -234,10 +247,10 @@ for i in range(25):
     RF_test_recall_list.append(metrics.recall_score(list(y_test), RF_test_pre))
     #单纯的SVM
     # SVM.fit(X_train, y_train)
-    # SVM_test_prob = SVM.predict_proba(X_test)[:,1]
+    # # #SVM_test_prob = SVM.predict_proba(X_test)[:,1]
     # SVM_test_pre = SVM.predict(X_test)
-    # SVMauc = metrics.roc_auc_score(y_test, SVM_test_prob)
-    # SVM_test_auc_list.append(SVMauc)
+    # # #SVMauc = metrics.roc_auc_score(y_test, SVM_test_prob)
+    # # #SVM_test_auc_list.append(SVMauc)
     # SVM_test_f1_list.append(metrics.f1_score(list(y_test), SVM_test_pre))
     # SVM_test_recall_list.append(metrics.recall_score(list(y_test), SVM_test_pre))
     # SVM_test_acu_list.append(metrics.accuracy_score(list(y_test), SVM_test_pre))

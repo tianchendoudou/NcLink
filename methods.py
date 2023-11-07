@@ -108,7 +108,8 @@ def MWMOTE(X, Y, N, k1=5, k2=3, k3=0.5, C_th=5, CMAX=2, C_p=10, return_mode='onl
     S_minf = []
     for i in S_min:
         neighbors = k.kneighbors(i, k1 + 1)  # remove itself from neighbors
-        neighbors.remove(i)
+        if i in neighbors:
+            neighbors.remove(i)
         if not all((neighbor in S_maj) for neighbor in neighbors): #如果所有临近样本都为多数类样本则all（）函数返回true if not 抛出这些临近样本没有少数类样本的噪声样本
             S_minf.append(i)
 
@@ -145,7 +146,7 @@ def MWMOTE(X, Y, N, k1=5, k2=3, k3=0.5, C_th=5, CMAX=2, C_p=10, return_mode='onl
                 closeness_factor = 0.
             else:
                 distance_n = math.sqrt(math.fsum(((a - b) ** 2 for a, b in zip(X[x], X[y])))) / len(X[x])
-                closeness_factor = min(C_th, (1 / distance_n)) / C_th * CMAX
+                closeness_factor = min(C_th, (1 / (distance_n+0.0000000000001))) / C_th * CMAX
             I_w[(y, x)] = closeness_factor
             sum_C_f += I_w[(y, x)]
         for x in S_imin:
